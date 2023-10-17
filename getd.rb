@@ -50,6 +50,16 @@ ldap = Net::LDAP.new(
 )
 puts "LDAP Bind Status: " + ldap.bind.to_s
 
+# Get Distinguished name of user
+if ldap.bind
+  filter = Net::LDAP::Filter.eq("cn", ldap_user)
+  treebase = ldap_base
+  ldap.search( :base => treebase, :filter =>filter) do |entry|
+    puts "distinguishedName: #{entry[:distinguishedName]}"
+  end
+end
+
+# Grab Domain information
 if ldap.bind
   # Search for domain naming contexts
   #filter = Net::LDAP::Filter.eq("objectClass", "domainDNS")
