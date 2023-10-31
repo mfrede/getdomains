@@ -65,8 +65,22 @@ if ldap.bind
   #filter = Net::LDAP::Filter.eq("objectClass", "domainDNS")
   filter = Net::LDAP::Filter.eq("objectClass", "domain")
   ldap.search(filter: filter) do |entry|
-    puts "Domain Name: #{entry[:dc].first}"
-    # You can print other domain-related information here
+    # Added 10/31/2023
+    strDomain = ""
+    dn = entry[:distinguishedName].to_s
+    dn = dn.gsub('[', '')
+    dn = dn.gsub(']','')
+    dn = dn.gsub('"','')
+    dnArray = dn.split(',')
+    dnArray.each do |part|
+      if strDomain.length == 0
+        strDomain = strDomain + part[3, part.length - 3]
+      else
+        strDomain = strDomain + "." + part[3, part.length - 3]
+      end
+    end
+    puts "Domain Name: #{entry[:dc].first}" + ", " + strDomain
+
   end
 else
   puts "Failed to bind to the global catalog."
